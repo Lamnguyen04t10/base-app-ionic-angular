@@ -6,6 +6,7 @@ import { Component } from '@angular/core';
   standalone: false,
 })
 export class AppComponent {
+  paletteToggle = false;
   public appPages = [
     { title: 'Inbox', url: '/folder/inbox', icon: 'mail' },
     { title: 'Outbox', url: '/folder/outbox', icon: 'paper-plane' },
@@ -16,4 +17,30 @@ export class AppComponent {
   ];
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
   constructor() {}
+  ngOnInit(): void {
+    // Use matchMedia to check the user preference
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+
+    // Initialize the dark palette based on the initial
+    // value of the prefers-color-scheme media query
+    this.initializeDarkPalette(prefersDark.matches);
+
+    // Listen for changes to the prefers-color-scheme media query
+    prefersDark.addEventListener('change', (mediaQuery) =>
+      this.initializeDarkPalette(mediaQuery.matches),
+    );
+  }
+
+  initializeDarkPalette(isDark: boolean) {
+    this.paletteToggle = isDark;
+    this.toggleDarkPalette(isDark);
+  }
+
+  toggleChange(event: CustomEvent) {
+    this.toggleDarkPalette(event.detail.checked);
+  }
+
+  toggleDarkPalette(shouldAdd: boolean) {
+    document.documentElement.classList.toggle('ion-palette-dark', shouldAdd);
+  }
 }
