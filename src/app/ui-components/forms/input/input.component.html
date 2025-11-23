@@ -1,0 +1,41 @@
+<div class="input-container" style="position: relative">
+  <ion-input
+    class="custom"
+    [ngModel]="value"
+    (ngModelChange)="updateValue($any($event))"
+    [labelPlacement]="config.labelPlacement"
+    [placeholder]="placeholder"
+    [counter]="config.counter"
+    [fill]="config.fill"
+    [maxlength]="maxLength"
+    [clearInput]="config.clearInput"
+    (ionBlur)="onBlur()"
+    [class.ng-invalid]="isError"
+  >
+    <div slot="label" style="margin-top: -2px;">
+      {{ label }}
+      <ion-text color="danger" *ngIf="isHasRequiredValidator"> * </ion-text>
+    </div>
+  </ion-input>
+
+  <div class="error-wrapper" [class.show]="isRequired">
+    <ion-icon name="alert-circle-outline"></ion-icon>
+    <ion-text class="error-text"> Bạn phải nhập trường này </ion-text>
+  </div>
+  <div class="error-wrapper" [class.show]="isErrorMinLength">
+    <ion-icon name="alert-circle-outline"></ion-icon>
+    <ion-text class="error-text" *ngIf="errorMinLengthValue">
+      'errorMinLengthValue' {{ errorMinLengthValue['requiredLength'] }}
+    </ion-text>
+  </div>
+  <div class="error-wrapper" [class.show]="isErrorMaxLength">
+    <ion-icon name="alert-circle-outline"></ion-icon>
+    <ion-text class="error-text" *ngIf="errorMaxLengthValue">
+      'errorMaxLengthValue' {{ errorMaxLengthValue['requiredLength'] }}
+    </ion-text>
+  </div>
+  <div class="error-wrapper" [class.show]="isErrorEmail">
+    <ion-icon name="alert-circle-outline"></ion-icon>
+    <ion-text class="error-text"> Bạn phải nhập trường này </ion-text>
+  </div>
+</div>

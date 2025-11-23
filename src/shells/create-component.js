@@ -47,11 +47,12 @@ if (!componentName) {
   process.exit(1);
 }
 
-const componentDir = path.join('src/app/components', componentName);
-const tsFile = path.join(componentDir, `${componentName}.component.ts`);
-const specFile = path.join(componentDir, `${componentName}.component.spec.ts`);
+const project = 'base';
+const rootPath = 'src/app/components';
+const componentDir = path.join(rootPath, componentName);
+const tsFile = path.join(rootPath, `${componentName}.component.ts`);
 
-const command = `ng g c components/${componentName}`;
+const command = `ng g c components/${componentName} --prefix=${project}`;
 
 const spinner = showSpinner('Generating your component...', '🚀', 'magenta');
 const startTime = Date.now();
@@ -71,11 +72,11 @@ exec(command, (error, stdout, stderr) => {
     if (fs.existsSync(componentDir)) {
       try {
         const files = fs.readdirSync(componentDir);
-        const specFiles = files.filter(f => f.endsWith('.spec.ts'));
+        const specFiles = files.filter((f) => f.endsWith('.spec.ts'));
         if (specFiles.length === 0) {
           console.log(colorText('ℹ️ No test file generated (good!)', 'yellow'));
         } else {
-          specFiles.forEach(f => {
+          specFiles.forEach((f) => {
             const full = path.join(componentDir, f);
             try {
               fs.unlinkSync(full);
@@ -86,10 +87,14 @@ exec(command, (error, stdout, stderr) => {
           });
         }
       } catch (readErr) {
-        console.warn(colorText(`⚠️ Could not read directory ${componentDir}: ${readErr.message}`, 'red'));
+        console.warn(
+          colorText(`⚠️ Could not read directory ${componentDir}: ${readErr.message}`, 'red'),
+        );
       }
     } else {
-      console.warn(colorText(`Folder ${componentDir} not found — cannot search for spec files`, 'red'));
+      console.warn(
+        colorText(`Folder ${componentDir} not found — cannot search for spec files`, 'red'),
+      );
     }
 
     if (fs.existsSync(tsFile)) {
@@ -100,19 +105,39 @@ exec(command, (error, stdout, stderr) => {
         fs.writeFileSync(tsFile, content, 'utf8');
         console.log(colorText(`Updated standalone to false`, 'cyan'));
       } else {
-        const updated = content.replace(
-          /@Component\s*\(\s*{([\s\S]*?)\n}\)/m,
-          (match, inner) => match.replace(inner, inner + '\n  standalone: false,')
+        const updated = content.replace(/@Component\s*\(\s*{([\s\S]*?)\n}\)/m, (match, inner) =>
+          match.replace(inner, inner + '\n  standalone: false,'),
         );
         if (updated !== content) {
           fs.writeFileSync(tsFile, updated, 'utf8');
           console.log(colorText(`Added standalone: false`, 'cyan'));
         } else {
-          console.warn(colorText('⚠️ Could not insert standalone (unexpected file format)', 'yellow'));
+          console.warn(
+            colorText('⚠️ Could not insert standalone (unexpected file format)', 'yellow'),
+          );
         }
       }
     } else {
-      console.warn(colorText(`File ${tsFile} not found`, 'red'));
+      // console.warn(colorText(`File ${tsFile} not found`, 'red'));
+    }
+
+    const typesDir = path.join(componentDir, 'types');
+    const indexFile = path.join(typesDir, 'index.ts');
+
+    try {
+      if (!fs.existsSync(typesDir)) {
+        fs.mkdirSync(typesDir);
+        console.log(colorText(`📁 Created folder: ${typesDir}`, 'green'));
+      }
+
+      if (!fs.existsSync(indexFile)) {
+        fs.writeFileSync(indexFile, '// export type YourTypeHere = {}\n', 'utf8');
+        console.log(colorText(`📄 Created file: ${indexFile}`, 'green'));
+      } else {
+        console.log(colorText(`ℹ️ index.ts already exists`, 'yellow'));
+      }
+    } catch (err) {
+      console.error(colorText(`❌ Failed to create types folder: ${err.message}`, 'red'));
     }
   }
 

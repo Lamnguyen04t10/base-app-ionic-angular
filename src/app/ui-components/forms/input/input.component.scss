@@ -1,0 +1,30 @@
+.error-wrapper {
+  position: absolute;
+  bottom: -0.3rem;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ion-color-danger);
+  font-size: 0.825rem;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+
+  ion-icon {
+    font-size: 1rem;
+    vertical-align: middle;
+  }
+
+  &.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+ion-input.custom {
+  --border-color: var(--ion-color-border);
+  min-height: 46px;
+}
