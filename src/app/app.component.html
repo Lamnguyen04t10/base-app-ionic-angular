@@ -1,38 +1,72 @@
-<ion-app>
-  <ion-menu contentId="main-content">
-    <ion-content>
-      <ion-list id="inbox-list">
+<ion-app class="bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+
+  <!-- SIDEBAR -->
+  <ion-menu contentId="main-content" type="overlay">
+    <ion-content class="bg-white dark:bg-gray-800">
+
+      <!-- Header -->
+      <div class="px-6 py-6 border-b border-gray-200 dark:border-gray-700">
+        <h2 class="text-xl font-bold text-gray-800 dark:text-white">
+          TrustLink Logistics
+        </h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          Dispatch System
+        </p>
+      </div>
+
+      <!-- Menu List -->
+      <ion-list class="p-4 space-y-2">
+
         @for (p of appPages; track p; let i = $index) {
           <ion-menu-toggle>
+
             <ion-item
               routerDirection="root"
               [routerLink]="[p.url]"
               lines="none"
               detail="false"
-              routerLinkActive="selected"
+              routerLinkActive="bg-orange-500 text-white"
+              class="rounded-xl transition-all duration-200
+                     hover:bg-orange-100 dark:hover:bg-gray-700
+                     text-gray-700 dark:text-gray-200"
             >
               <ion-icon
-                aria-hidden="true"
                 slot="start"
                 [ios]="p.icon + '-outline'"
                 [md]="p.icon + '-sharp'"
+                class="text-lg"
               ></ion-icon>
-              <ion-label> {{ p.title }} </ion-label>
+
+              <ion-label class="font-medium">
+                {{ p.title }}
+              </ion-label>
+
             </ion-item>
+
           </ion-menu-toggle>
         }
 
-        <ion-item>
+        <!-- Divider -->
+        <div class="border-t border-gray-200 dark:border-gray-700 my-4"></div>
+
+        <!-- Dark Mode Toggle -->
+        <ion-item lines="none" class="rounded-xl bg-gray-50 dark:bg-gray-700">
           <ion-toggle
             [(ngModel)]="paletteToggle"
             (ionChange)="toggleChange($event)"
             justify="space-between"
           >
-            Dark Mode
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-200">
+              Dark Mode
+            </span>
           </ion-toggle>
         </ion-item>
+
       </ion-list>
     </ion-content>
   </ion-menu>
+
+  <!-- MAIN CONTENT -->
   <ion-router-outlet id="main-content"></ion-router-outlet>
+
 </ion-app>

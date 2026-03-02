@@ -42,5 +42,10 @@ export class AppComponent {
 
   toggleDarkPalette(shouldAdd: boolean) {
     document.documentElement.classList.toggle('ion-palette-dark', shouldAdd);
+    // Tailwind dark
+  document.documentElement.classList.toggle(
+    'dark',
+    shouldAdd
+  );
   }
 }
