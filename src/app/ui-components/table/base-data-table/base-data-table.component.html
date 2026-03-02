@@ -1,0 +1,228 @@
+<ngx-datatable *ngIf="data && data.items"
+  class="material"
+  #dataTable
+  [rows]="data.items"
+  [messages]="{
+    emptyMessage: 'noDataFound' | translate,
+    totalMessage: 'totalMessage' | translate
+  }"
+  [rowHeight]="'auto'"
+  [externalPaging]="true"
+  [columnMode]="'force'"
+  [offset]="data.pageIndex"
+  [limit]="data.pageSize"
+  [headerHeight]="40"
+  [footerHeight]="50"
+  [scrollbarH]="true"
+  [count]="data.total"
+  (page)="handlePageChange($event)"
+>
+  <ngx-datatable-column
+    *ngFor="let column of headers; let i = index"
+    [width]="column.width ?? 150"
+  >
+    <ng-template ngx-datatable-header-template>
+      <ion-text
+        class="s16"
+        style="display: block; width: 100%"
+        [ngClass]="{
+          'ion-text-left': i === 0,
+          'ion-text-center': i !== 0
+        }"
+      >
+        {{ column.label ?? column.name | translate }}
+      </ion-text>
+    </ng-template>
+    <ng-template let-row="row" ngx-datatable-cell-template>
+      <ion-text
+        *ngIf="row[column.name] || row[column.name] == 0"
+        style="display: block; width: 100%"
+        [ngClass]="{
+          'ion-text-left': i === 0,
+          'ion-text-center': i !== 0
+        }"
+      >
+        <ion-text
+          *ngIf="column.type == 'string-range'"
+          class="m14"
+          style="display: block; width: 100%"
+          [ngClass]="{
+            'ion-text-left': i === 0,
+            'ion-text-center': i !== 0
+          }"
+        >
+          <div *ngFor="let range of row[column.name]">
+            {{ range }}
+          </div>
+        </ion-text>
+        <ion-text
+          *ngIf="column.type == 'string'"
+          class="m14"
+          style="display: block; width: 100%"
+          [ngClass]="{
+            'ion-text-left': i === 0,
+            'ion-text-center': i !== 0
+          }"
+        >
+          {{ row[column.name] }}
+        </ion-text>
+        <ion-text
+          *ngIf="column.type == 'unit'"
+          class="m14"
+          style="display: block; width: 100%"
+          [ngClass]="{
+            'ion-text-left': i === 0,
+            'ion-text-center': i !== 0
+          }"
+        >
+          {{ getUnit(row[column.name]) }}
+        </ion-text>
+        <ion-text
+          *ngIf="column.type == 'condition'"
+          class="m14"
+          style="display: block; width: 100%"
+          [ngClass]="{
+            'ion-text-left': i === 0,
+            'ion-text-center': i !== 0
+          }"
+        >
+          {{ getCondition(row[column.name]) }}
+        </ion-text>
+        <ion-text
+          style="display: block; width: 100%"
+          class="m12 text-slate-300"
+          *ngIf="['decimal', 'decimal?'].includes(column.type)"
+          [ngClass]="{
+            'ion-text-left': i === 0,
+            'ion-text-center': i !== 0
+          }"
+        >
+          SGD {{ row[column.name] | currency : "" : "" : "1.2-2" }}</ion-text
+        >
+        <ion-text
+          *ngIf="column.type == 'currency'"
+          class="m14"
+          style="display: block; width: 100%"
+        >
+
+         {{ row[column.currencyField] }} {{ row[column.name] | number:'1.2-2' }}
+        </ion-text>
+        <ion-text
+          style="display: block; width: 100%"
+          [ngClass]="{
+            'ion-text-left': i === 0,
+            'ion-text-center': i !== 0
+          }"
+          class="m14"
+          *ngIf="
+            column.type == 'datetime' ||
+            column.type == 'DateTime?' ||
+            column.type == 'DateTime'
+          "
+        >
+          {{ row[column.name] + "Z" | date : "dd-MM-yyyy HH:mm:ss" }}
+        </ion-text>
+        <ion-text
+          *ngIf="column.type == 'DateTimeUTC'"
+          class="m14"
+          style="display: block; width: 100%"
+          [ngClass]="{
+            'ion-text-left': i === 0,
+            'ion-text-center': i !== 0
+          }"
+        >
+          {{ row[column.name] | date : "dd-MM-yyyy HH:mm:ss" }}
+        </ion-text>
+        <ion-text
+          *ngIf="column.type == 'date'"
+          class="m14"
+          style="display: block; width: 100%"
+          [ngClass]="{
+            'ion-text-left': i === 0,
+            'ion-text-center': i !== 0
+          }"
+        >
+          {{ row[column.name] + "Z" | date : "dd-MM-yyyy" }}
+        </ion-text>
+        <ion-text
+          *ngIf="column.type == 'origin-date'"
+          class="m14"
+          style="display: block; width: 100%"
+          [ngClass]="{
+            'ion-text-left': i === 0,
+            'ion-text-center': i !== 0
+          }"
+        >
+          {{ row[column.name] | date : "dd-MM-yyyy" }}
+        </ion-text>
+        <ion-text
+          *ngIf="column.type == 'week-days'"
+          class="m14"
+          style="display: block; width: 100%"
+          [ngClass]="{
+            'ion-text-left': i === 0,
+            'ion-text-center': i !== 0
+          }"
+        >
+          {{ getWeekDaysText(row[column.name]) }}
+        </ion-text>
+        <ion-text
+          style="display: block; width: 100%"
+          [ngClass]="{
+            'ion-text-left': i === 0,
+            'ion-text-center': i !== 0
+          }"
+          *ngIf="column.type == 'refund-type'"
+          class="m14"
+          [class]="getColor(row[column.name])"
+        >
+          {{ getRefundTypeString(row[column.name]) }}
+        </ion-text>
+        <ion-text
+          style="display: block; width: 100%"
+          [ngClass]="{
+            'ion-text-left': i === 0,
+            'ion-text-center': i !== 0
+          }"
+          class="m14"
+          *ngIf="['number', 'int', 'int?,long,long?'].includes(column.type)"
+        >
+          {{ row[column.name] }}
+        </ion-text>
+      </ion-text>
+    </ng-template>
+  </ngx-datatable-column>
+  <ngx-datatable-column
+    [sortable]="false"
+    [width]="actionWitdh"
+    *ngIf="isShowAction"
+  >
+    <ng-template ngx-datatable-header-template>
+      <ion-text
+        class="s16 ion-text-right"
+        style="display: block; width: 100%; padding-right: 0.825rem"
+      >
+        {{ "Action" | translate }}
+      </ion-text>
+    </ng-template>
+    <ng-template let-row="row" ngx-datatable-cell-template>
+      <ng-container *ngIf="customActionsTemplate; else defaultActions">
+        <ng-container
+          *ngTemplateOutlet="customActionsTemplate; context: { row: row }"
+        ></ng-container>
+      </ng-container>
+
+      <!-- Default fallback if no custom template -->
+      <ng-template #defaultActions>
+        <div style="width: 100%" class="ion-text-right">
+          <ion-button
+            (click)="triggerOpenDetails(row)"
+            style="height: 2rem !important"
+          >
+            {{ "Details" | translate }}
+          </ion-button>
+        </div>
+      </ng-template>
+    </ng-template>
+  </ngx-datatable-column>
+</ngx-datatable>

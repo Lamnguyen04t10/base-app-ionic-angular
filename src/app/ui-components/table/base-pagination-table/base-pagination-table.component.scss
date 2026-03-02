@@ -1,117 +1,15 @@
-/*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
- */
+@import '../../../../theme/shared-table.scss';
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Core CSS required for Ionic components to work properly */
-/* Basic CSS for apps built with Ionic */
-
-/* Optional CSS utils that can be commented out */
-
-/**
- * Ionic Dark Palette
- * -----------------------------------------------------
- * For more information, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* @import '@ionic/angular/css/palettes/dark.always.css'; */
-/* @import '@ionic/angular/css/palettes/dark.system.css'; */
-
-@import url('./theme/color.scss');
-@import url('./theme/font.scss');
-@import url('./theme/input.scss');
-
-@import "@fontsource/inter/400.css";
-@import "@fontsource/inter/500.css";
-@import "@fontsource/inter/600.css";
-@import "@fontsource/inter/700.css";
-
-:root {
-  --ion-font-family: "Inter", system-ui, sans-serif;
-  background: transparent;
-}
-
-ion-item {
-  --background-activated: transparent;
-  --background-focused: transparent;
-}
-
-ion-item.ion-activated {
-  opacity: 1 !important;
-}
-
-ion-list {
-  --ion-item-background: transparent;
-  --background: transparent;
-}
-
-#container {
-  padding: 1rem;
-  margin-top: 1rem;
-}
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-  
-  --color-primary-50: #fff7ed;
-  --color-primary-100: #ffedd5;
-  --color-primary-200: #fed7aa;
-  --color-primary-300: #fdba74;
-  --color-primary-400: #fb923c;
-  --color-primary-500: #f97316;
-  --color-primary-600: #ea580c;
-  --color-primary-700: #c2410c;
-  --color-primary-800: #9a3412;
-  --color-primary-900: #7c2d12;
-}
-
-@layer base {
-  body {
-    @apply font-sans antialiased bg-slate-50 text-slate-900 transition-colors duration-300;
-  }
-  
-  .dark body {
-    @apply bg-slate-950 text-slate-100;
+::ng-deep {
+  ion-popover {
+    --background: var(--ion-color-bg);
+    
+    ion-item {
+      border-radius: 4px;
+    }
   }
 }
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-slate-300 rounded-full;
-}
-
-.dark ::-webkit-scrollbar-thumb {
-  @apply bg-slate-700;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-primary-500;
-}
-
-
+// Generic table styles
 .generic-table {
   .item-name {
     font-weight: 600;
@@ -380,7 +278,3 @@ ion-list {
     }
   }
 }
-
-
-
-

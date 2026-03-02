@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+
 @Component({
-  selector: 'app-root',
-  templateUrl: 'app.component.html',
-  styleUrls: ['app.component.scss'],
-  standalone: false,
+  selector: 'app-auth-layout',
+  templateUrl: './auth-layout.page.html',
+  styleUrls: ['./auth-layout.page.scss'],
+  standalone: false
 })
-export class AppComponent {
+export class AuthLayoutPage implements OnInit {
   paletteToggle = false;
   public appPages = [
     { title: 'Inbox', url: '/folder/inbox', icon: 'mail' },
@@ -19,7 +20,8 @@ export class AppComponent {
   constructor() { }
   ngOnInit(): void {
     // Use matchMedia to check the user preference
-    let prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+
     // Initialize the dark palette based on the initial
     // value of the prefers-color-scheme media query
     this.initializeDarkPalette(prefersDark.matches);
@@ -31,7 +33,6 @@ export class AppComponent {
   }
 
   initializeDarkPalette(isDark: boolean) {
-    isDark = true;
     this.paletteToggle = isDark;
     this.toggleDarkPalette(isDark);
   }

@@ -1,0 +1,330 @@
+<div class="generic-table shared-table">
+  <div class="table-header">
+    <div class="header-left">
+      <div class="entries-per-page" *ngIf="config.showPageSize && hasPageSizeChangeHandler">
+        <ion-select 
+          id="pageSize"
+          [(ngModel)]="pageSizeString" 
+          (ionChange)="handlePageSizeChange($event)"
+          interface="popover"
+          class="page-size-select">
+          <ion-select-option 
+            *ngFor="let size of config.pageSizeOptions" 
+            [value]="size.toString()">
+            {{ size }}
+          </ion-select-option>
+        </ion-select>
+        <label for="pageSize">Entries per page</label>
+      </div>
+    </div>
+    
+    <div class="header-right">
+      <div class="filter-section" *ngIf="config.showFilter && hasFilterHandler">
+        <label for="filter">{{ config.filterLabel }}</label>
+        <div class="input-container">
+          <ion-input 
+            id="filter"
+            [(ngModel)]="filterText" 
+            (ionInput)="handleFilterChange()"
+            [placeholder]="config.filterPlaceholder"
+            class="filter-input">
+          </ion-input>
+          <ion-button 
+            *ngIf="filterText" 
+            fill="clear" 
+            size="small"
+            (click)="clearFilter()"
+            class="clear-button">
+            <ion-icon name="close-circle" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+      
+      <div class="create-button-section" *ngIf="config.showCreateButton">
+        <ion-button
+          *ngIf="hasCreateHandler"
+          (click)="handleCreate()"
+          style="height: 32px; margin-left: 8px;">
+          {{ config.createButtonText }}
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-container desktop-table">
+    <table class="data-table">
+      <thead>
+        <tr class="table-header-row">
+          <th 
+            *ngIf="config.showSelection && config.selectionType === 'multiple'"
+            class="selection-header">
+            <ion-checkbox
+              [checked]="isAllSelected()"
+              [indeterminate]="isIndeterminate()"
+              (ionChange)="isAllSelected() ? deselectAllRows() : selectAllRows()">
+            </ion-checkbox>
+          </th>
+          <th 
+            *ngFor="let header of headers" 
+            [class]="'sortable ' + getColumnClass(header)"
+            [class.sortable]="header.sortable !== false"
+            (click)="header.sortable !== false ? handleSort(header.name) : null" [title]="header.label">
+            <ion-row class="ion-no-margin ion-no-padding">
+              <ion-col class="ion-no-margin ion-no-padding" size="10">
+                <ion-text class="b12 cut-multiline-one">{{ header.label }}</ion-text>
+              </ion-col>
+              <ion-col class="ion-no-margin ion-no-padding ion-text-right" size="2">
+                <ion-icon
+                  *ngIf="header.sortable !== false && hasSortHandler"
+                  [name]="getSortIcon(header.name)"
+                  class="sort-icon">
+                </ion-icon>
+              </ion-col>
+            </ion-row>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr 
+          *ngFor="let row of data?.items; let i = index" 
+          class="table-row"
+          [class.alternate-row]="i % 2 === 0">
+          <td 
+            *ngIf="config.showSelection"
+            class="selection-cell">
+            <ion-checkbox
+              [checked]="isRowSelected(row)"
+              (ionChange)="toggleRowSelection(row)">
+            </ion-checkbox>
+          </td>
+          
+          <td 
+            *ngFor="let header of headers; let isLast = last"
+            [class]="getColumnClass(header)"
+            [class.actions-cell]="isActionsColumn(header)">
+            
+            <ng-container *ngIf="!isActionsColumn(header)">
+              <div 
+                (click)="handleCellClick(row, header)">
+                <ion-text 
+                  *ngIf="header.type === 'status'"
+                  class="status-text"
+                  [class]="getStatusClass(row[header.name])">
+                  {{ formatStatus(row[header.name]) }}
+                </ion-text>
+                <ion-text 
+                  *ngIf="header.type === 'date'"
+                  class="date-text">
+                  {{ row[header.name] | date:'MM/dd/yyyy' }}
+                </ion-text>
+                <ion-text 
+                  *ngIf="header.type === 'datetime'"
+                  class="date-text">
+                  {{ row[header.name] + 'Z' | date:'MM/dd/yyyy HH:mm:ss'}}
+                </ion-text>
+                <ion-text 
+                  *ngIf="header.type === 'number'"
+                  class="number-text">
+                  {{ row[header.name] }}
+                </ion-text>
+                <ion-text 
+                  *ngIf="header.type === 'currency'"
+                  class="currency-text">
+                  {{ row[header.name] | currency: '' : 'symbol': '1.2-2' }}
+                </ion-text>
+                <ion-text 
+                  *ngIf="header.type === 'string'" class="string-text clickable-cell">
+                  
+                  {{ row[header.name] }}
+                </ion-text>
+                <div 
+                  *ngIf="header.type === 'stringWithPhoto'"
+                  class="name-with-avatar clickable-cell">
+                  <img 
+                    [src]="row.photo || 'assets/image/no-image.jpg'" 
+                    (error)="onImageError($event)"
+                    class="avatar-image"
+                    alt="Avatar">
+                  <ion-text class="string-text clickable-cell">{{ row[header.name] }}</ion-text>
+                </div>
+              </div>
+            </ng-container>
+
+            <div 
+              *ngIf="isActionsColumn(header)"
+              class="item-actions">
+              <div class="action-buttons">
+                <ion-icon 
+                  *ngIf="hasViewHandler && canShowView(row)"
+                  name="eye-outline" 
+                  class="action-icon view-icon" 
+                  (click)="handleView(row)"
+                  title="View">
+                </ion-icon>
+                <ion-icon 
+                  *ngIf="hasEditHandler"
+                  name="create-outline" 
+                  class="action-icon edit-icon" 
+                  (click)="handleEdit(row)"
+                  title="Edit">
+                </ion-icon>
+                <ion-icon 
+                  *ngIf="hasDeleteHandler"
+                  name="trash-outline" 
+                  class="action-icon delete-icon" 
+                  (click)="handleDelete(row)"
+                  title="Delete">
+                </ion-icon>
+                <ion-icon
+                  *ngIf="hasActionsHandler"
+                  name="trash-outline" 
+                  class="action-icon" 
+                  (click)="handleActions(row)"
+                  title="Actions"
+                  name="ellipsis-vertical-outline">
+                </ion-icon>
+                <ng-container *ngIf="hasCustomButtonHandler">
+                  <ion-button
+                    *ngFor="let btn of getVisibleButtons(row)"
+                    [fill]="btn.fill || 'solid'"
+                    [color]="btn.color"
+                    [class]="btn.cssClass"
+                    [disabled]="btn.disabled ? btn.disabled(row) : false"
+                    (click)="handleCustomButton(btn.key, row)">
+                    <ion-icon
+                      *ngIf="btn.icon"
+                      [name]="btn.icon"
+                    ></ion-icon>
+                    {{ btn.label }}
+                  </ion-button>
+                </ng-container>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mobile-cards" *ngIf="config.showMobileCards">
+    <!-- Content projection for custom card components -->
+    <ng-content #mobileCards select="[slot=mobile-cards]"></ng-content>
+    <!-- Default card layout when no custom cards are provided -->
+    <ng-container *ngIf="!hasSpecificMobileCardComponent()">
+      <ion-card 
+        *ngFor="let row of data?.items; let i = index" 
+        class="mobile-card ion-no-margin"
+        [class.alternate-card]="i % 2 === 0">
+        
+        <ion-card-content>
+          <ion-row>
+            <ion-col size="12">
+              <div style="flex: 1;">
+                <!-- Header with title and status -->
+                <div class="flex justify-between mb-4 items-center">
+                  <ion-text class="b16">{{ row[getFirstHeaderName()] }}</ion-text>
+                  <div class="list" style="align-items: start; justify-content: end;" *ngIf="hasStatusHeader()">
+                    <!-- <app-status-badge statusRaw="{{ row[getStatusHeader()?.name || ''] }}"></app-status-badge> -->
+                  </div>
+                </div>
+                
+                <!-- Data rows with icons -->
+                <ng-container *ngFor="let header of headers">
+                  <div 
+                    class="list" 
+                    style="margin-top: 5px;"
+                    *ngIf="header.type !== 'actions' && header.name !== getFirstHeaderName() && header.name !== getStatusHeader()?.name"
+                    [class.clickable-cell]="isClickableColumn(header)"
+                    (click)="isClickableColumn(header) ? handleCellClick(row, header) : null">
+                    <ion-icon 
+                      *ngIf="header.iconName" 
+                      [name]="header.iconName" 
+                      style="font-size: 14px; color: var(--ion-color-dis);" />
+                    <ion-text 
+                      class="m14 cut-multiline-one" 
+                      style="margin-left: 5px; color: var(--ion-color-dis);">
+                      <ng-container *ngIf="header.type === 'date'">
+                        {{ row[header.name] | date:'longDate' }}
+                      </ng-container>
+                      <ng-container *ngIf="header.type === 'currency'">
+                        {{ row[header.name] | currency: '' : 'symbol': '1.2-2' }}
+                      </ng-container>
+                      <ng-container *ngIf="header.type !== 'date' && header.type !== 'currency'">
+                        {{ row[header.name] }}
+                      </ng-container>
+                    </ion-text>
+                  </div>
+                </ng-container>
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-card-content>
+        
+        <div class="card-footer" *ngIf="hasViewHandler || hasEditHandler || hasDeleteHandler">
+          <ion-row>
+            <ion-col size="12" class="ion-text-right">
+              <ion-button
+                *ngIf="hasViewHandler && canShowView(row)"
+                size="small"
+                color="bord"
+                (click)="handleView(row)">
+                View Details
+              </ion-button>
+              <ion-button
+                *ngIf="hasEditHandler"
+                size="small"
+                (click)="handleEdit(row)">
+                Edit
+              </ion-button>
+              <ion-button
+                *ngIf="hasDeleteHandler"
+                size="small"
+                color="danger"
+                fill="outline"
+                (click)="handleDelete(row)">
+                Delete
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </div>
+      </ion-card>
+    </ng-container>
+  </div>
+
+  <div class="pagination-container" *ngIf="config.showPagination && hasPageChangeHandler">
+    <div class="pagination-info">
+      Showing {{ startItem }} to {{ endItem }} of {{ totalItems }} entries
+    </div>
+    
+    <div class="pagination-controls">
+      <ion-button 
+        fill="clear" 
+        size="small"
+        (click)="goToPreviousPage()"
+        [disabled]="currentPage === 1"
+        class="pagination-btn">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+      
+      <ion-button 
+        *ngFor="let page of pageNumbers"
+        fill="clear" 
+        size="small"
+        [class.active]="page === currentPage"
+        [disabled]="page === -1"
+        (click)="page !== -1 ? goToPage(page) : null"
+        class="pagination-btn page-number">
+        {{ page === -1 ? '...' : page }}
+      </ion-button>
+      
+      <ion-button 
+        fill="clear" 
+        size="small"
+        (click)="goToNextPage()"
+        [disabled]="currentPage === totalPages"
+        class="pagination-btn">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
+</div>

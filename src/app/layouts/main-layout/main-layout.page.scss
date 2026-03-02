@@ -1,0 +1,10 @@
+ion-router-outlet,
+ion-router-outlet > .ion-page {
+  position: relative !important;
+  height: 100%;
+}
+
+ion-router-outlet > .ion-page {
+  display: flex;
+  flex-direction: column;
+}
